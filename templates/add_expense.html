@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg mt-4">
+            <div class="card-header bg-danger text-white py-3">
+                <h4 class="mb-0 text-center"><i class="fas fa-wrench me-2"></i>Masraf Girişi</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('add_expense') }}">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Araç Seçimi</label>
+                        <select class="form-select border-secondary-subtle" name="vehicle_id" required>
+                            <option value="">Araç Seçiniz...</option>
+                            {% for vehicle in vehicles %}
+                            <option value="{{ vehicle.id }}">{{ vehicle.plaka }} - {{ vehicle.marka }} {{ vehicle.model
+                                }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Masraf Türü</label>
+                            <select class="form-select border-secondary-subtle" name="masraf_turu" required>
+                                <option value="Bakım">Bakım</option>
+                                <option value="Yakıt">Yakıt</option>
+                                <option value="Kaza">Kaza</option>
+                                <option value="Vergi/Sigorta">Vergi/Sigorta</option>
+                                <option value="Diğer">Diğer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tutar (₺)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₺</span>
+                                <input type="number" step="0.01" class="form-control border-secondary-subtle"
+                                    name="tutar" placeholder="0.00" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 mt-3">
+                        <label class="form-label fw-bold">Açıklama</label>
+                        <textarea class="form-control border-secondary-subtle" name="aciklama" rows="3"
+                            placeholder="Masraf detaylarını giriniz..."></textarea>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg shadow-sm">
+                            <i class="fas fa-save me-2"></i>Masrafı Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <a href="{{ url_for('index') }}" class="text-decoration-none text-muted"> <i
+                    class="fas fa-arrow-left me-1"></i> Dashboard'a Dön</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

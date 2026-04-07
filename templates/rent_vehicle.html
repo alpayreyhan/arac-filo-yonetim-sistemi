@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg mt-4">
+            <div class="card-header bg-primary text-white py-3">
+                <h4 class="mb-0 text-center"><i class="fas fa-key me-2"></i>Yeni Kiralama</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('rentals') }}">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Müşteri Seçimi</label>
+                        <select class="form-select border-secondary-subtle" name="customer_id" required>
+                            <option value="">Bir Müşteri Seçiniz...</option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.ad_soyad }} ({{ customer.ehliyet_no }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Listede olmayan müşteri için önce Müşteri Ekle sayfasını kullanın.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Araç Seçimi</label>
+                        <select class="form-select border-secondary-subtle" name="vehicle_id" required>
+                            <option value="">Müsait Araç Seçiniz...</option>
+                            {% for vehicle in vehicles %}
+                            <option value="{{ vehicle.id }}">{{ vehicle.plaka }} - {{ vehicle.marka }} {{ vehicle.model
+                                }} ({{ "%.2f"|format(vehicle.saatlik_ucret or 0) }} ₺/Saat)</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text text-success"><i class="fas fa-check-circle me-1"></i>Sadece "Müsait"
+                            durumdaki araçlar listelenir.</div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Başlangıç Zamanı</label>
+                            <input type="datetime-local" class="form-control border-secondary-subtle"
+                                name="baslangic_tarihi" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Bitiş Zamanı</label>
+                            <input type="datetime-local" class="form-control border-secondary-subtle"
+                                name="bitis_tarihi" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                            <i class="fas fa-play me-2"></i>Kiralamayı Başlat
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <a href="{{ url_for('index') }}" class="text-decoration-none text-muted"> <i
+                    class="fas fa-arrow-left me-1"></i> Dashboard'a Dön</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

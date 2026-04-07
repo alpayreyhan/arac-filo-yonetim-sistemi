@@ -1,0 +1,25 @@
+
+@app.route('/delete_customer/<int:id>')
+def delete_customer(id):
+    try:
+        customer = Customer.query.get_or_404(id)
+        
+        # 1. İlişkili aktif kiralamaları bul ve araçları boşa çıkar
+        active_rentals = Rental.query.filter_by(customer_id=id, kiralama_durumu='Aktif').all()
+        for rental in active_rentals:
+            vehicle = Vehicle.query.get(rental.vehicle_id)
+            if vehicle:
+                vehicle.durum = 'Müsait'
+        
+        # 2. Tüm geçmiş kiralamaları sil (IntegrityError önlemek için)
+        Rental.query.filter_by(customer_id=id).delete()
+        
+        # 3. Müşteriyi sil
+        db.session.delete(customer)
+        db.session.commit()
+        flash(f'{customer.ad_soyad} ve tüm geçmiş kayıtları başarıyla silindi.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Silme işleminde hata oluştu: {str(e)}', 'error')
+    
+    return redirect(url_for('customers'))

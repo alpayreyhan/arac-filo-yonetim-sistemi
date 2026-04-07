@@ -1,0 +1,40 @@
+Connected to database.
+Existing tables: ['alerts', 'customers', 'expenses', 'vehicles']
+
+--- 'vehicles' Table Columns ---
+Column: id - Type: BIGINT
+Column: plate - Type: VARCHAR(20)
+Column: brand - Type: VARCHAR(50)
+Column: model - Type: VARCHAR(50)
+Column: year - Type: INTEGER
+Column: chassis_no - Type: VARCHAR(50)
+Column: current_km - Type: INTEGER
+Column: purchase_date - Type: DATE
+Column: status - Type: ENUM
+Column: insurance_expiry_date - Type: DATE
+Column: last_maintenance_date - Type: DATE
+Column: image_path - Type: VARCHAR(255)
+Column: created_at - Type: TIMESTAMP
+Column: updated_at - Type: TIMESTAMP
+Column: deleted_at - Type: TIMESTAMP
+
+--- 'customers' Table Columns ---
+Column: id - Type: INTEGER
+Column: ad_soyad - Type: VARCHAR(100)
+Column: telefon - Type: VARCHAR(20)
+Column: ehliyet_no - Type: VARCHAR(50)
+Column: notlar - Type: TEXT
+
+Table 'rentals' does not exist.
+
+--- 'expenses' Table Columns ---
+Column: id - Type: BIGINT
+Column: vehicle_id - Type: BIGINT
+Column: type - Type: ENUM
+Column: amount - Type: DECIMAL(10, 2)
+Column: transaction_date - Type: DATE
+Column: mileage_at_expense - Type: INTEGER
+Column: description - Type: TEXT
+Column: invoice_file_path - Type: VARCHAR(255)
+Column: created_at - Type: TIMESTAMP
+Column: updated_at - Type: TIMESTAMP

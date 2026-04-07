@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header & New Rental Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark">Kiralama Yönetimi</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRentalModal">
+            <i class="fas fa-plus me-2"></i>Yeni Kiralama
+        </button>
+    </div>
+
+    <!-- Active Rentals List -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Aktif Kiralamalar</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Araç Bilgisi</th>
+                            <th>Müşteri</th>
+                            <th>Başlangıç Tarihi</th>
+                            <th>Başlangıç KM</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rental in rental_list %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ rental.vehicle.plate }}</div>
+                                <div class="small text-muted">{{ rental.vehicle.brand }} {{ rental.vehicle.model }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-bold">{{ rental.customer.ad_soyad }}</div>
+                                <div class="small text-muted">{{ rental.customer.telefon }}</div>
+                            </td>
+                            <td>{{ rental.baslangic_tarihi.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td>{{ rental.initial_km if rental.initial_km else rental.vehicle.current_km }} km</td>
+                            <td><span class="badge bg-success">Aktif</span></td>
+                            <td class="text-end">
+                                <!-- Trigger Complete Rental Modal -->
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                    data-bs-target="#completeModal{{ rental.id }}">
+                                    <i class="fas fa-flag-checkered me-1"></i>Teslim Al
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-car-side fa-3x mb-3 opacity-25"></i>
+                                <div>Şu anda aktif kiralama bulunmuyor.</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complete Rental Modals (Placed OUTSIDE table Loop) -->
+{% for rental in rental_list %}
+<div class="modal fade" id="completeModal{{ rental.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{ url_for('complete_rental', id=rental.id) }}" method="POST">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Kiralamayı Bitir - {{ rental.vehicle.plate }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Araç teslim alınıyor. Lütfen güncel kilometreyi giriniz.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Dönüş Kilometresi</label>
+                        <input type="number" class="form-control" name="end_km" required
+                            placeholder="Şu anki: {{ rental.vehicle.current_km }}">
+                        <div class="form-text">Araç en son {{ rental.vehicle.current_km }} km'deydi.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-danger">Kiralamayı Bitir</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+<!-- New Rental Modal -->
+<div class="modal fade" id="addRentalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form action="{{ url_for('rentals') }}" method="POST">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Yeni Kiralama Başlat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Araç Seçimi</label>
+                            <select class="form-select" name="vehicle_id" required>
+                                <option value="">Araç Seçiniz...</option>
+                                {% for vehicle in vehicles %}
+                                <option value="{{ vehicle.id }}">
+                                    {{ vehicle.brand }} {{ vehicle.model }} - {{ vehicle.plate }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Müşteri Seçimi</label>
+                            <select class="form-select" name="customer_id" required>
+                                <option value="">Müşteri Seçiniz...</option>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}">{{ customer.ad_soyad }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Başlangıç Kilometresi</label>
+                        <input type="number" class="form-control" name="initial_km"
+                            placeholder="Aracın mevcut kmsi otomatik alınır, gerekirse değiştirin">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Başlangıç Tarihi</label>
+                            <input type="datetime-local" class="form-control" name="baslangic_tarihi" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Bitiş Tarihi</label>
+                            <input type="datetime-local" class="form-control" name="bitis_tarihi" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kiralamayı Başlat</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
